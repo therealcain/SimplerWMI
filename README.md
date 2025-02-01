@@ -20,10 +20,21 @@ A modern C++ wrapper for Windows Management Instrumentation (WMI) operations, pr
 
 ### Retrieving Operating System Information
 ```cpp
-const WindowsManagementInstrumentationClient wmi;
-auto os = wmi.getProperties( L"Win32_OperatingSystem" );
-const auto name = res.getProperty< std::wstring >( L"Caption" );
-if(name.has_value()) {
-  std::cout << name.value();
+int main() {
+    SimplerWMI::WindowsManagementInstrumentationClient client;
+    const auto os = client.getProperties( L"Win32_OperatingSystem" );
+    if ( !os.empty() ) {
+        for ( const auto &prop: os ) {
+            const auto name = prop.getProperty< std::wstring >( L"Caption" );
+            if ( name.has_value() ) { std::wcout << name.value(); }
+        }
+    }
+
+    const auto ram_sticks = client.getProperties( L"Win32_PhysicalMemory" );
+    for ( const auto &stick: ram_sticks ) {
+        if ( auto model = stick.getProperty< uint32_t >( L"Speed" ) ) {
+            std::wcout << L"RAM Model: " << *model << '\n';
+        }
+    }
 }
 ```
