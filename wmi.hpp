@@ -301,6 +301,7 @@ inline std::vector< WindowsManagementInstrumentationObject > WindowsManagementIn
             }
             SafeArrayDestroy( pNames );
 
+            WindowsManagementInstrumentationObject currentObj;
             for ( const auto &propName: propertyNames ) {
                 VARIANT vtProp;
                 VariantInit( &vtProp );
@@ -314,12 +315,10 @@ inline std::vector< WindowsManagementInstrumentationObject > WindowsManagementIn
                     THROW_LAST();
                 }
 
-                // Convert variant to WmiValue and store in result
-                WindowsManagementInstrumentationObject currentObj;
                 currentObj.addProperty( propName, convertVariantToWmiValue( vtProp, cimType ) );
-                results.push_back( currentObj );
                 VariantClear( &vtProp );
             }
+            results.push_back( currentObj );
 
             pclsObj->Release();
         }
